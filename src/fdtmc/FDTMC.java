@@ -271,14 +271,7 @@ public class FDTMC {
     public FDTMC inline(Map<String, FDTMC> indexedModels) {
         FDTMC inlined = new FDTMC();
         
-        inlined.variableName = this.getVariableName();
-
-        Map<State, State> statesMapping = inlined.inlineStates(this);
-        inlined.setInitialState(statesMapping.get(this.getInitialState()));
-        inlined.setSuccessState(statesMapping.get(this.getSuccessState()));
-        inlined.setErrorState(statesMapping.get(this.getErrorState()));
-
-        inlined.inlineTransitions(this, statesMapping);
+        Map<State, State> statesMapping = inlined.getCopyForInlining(this);
 
         for (Map.Entry<String, List<Interface>> entry: interfaces.entrySet()) {
             String dependencyId = entry.getKey();
@@ -293,6 +286,18 @@ public class FDTMC {
         }
         return inlined;
     }
+
+	private Map<State, State> getCopyForInlining(FDTMC origin) {
+		variableName = origin.getVariableName();
+
+        Map<State, State> statesMapping = inlineStates(origin);
+        setInitialState(statesMapping.get(origin.getInitialState()));
+        setSuccessState(statesMapping.get(origin.getSuccessState()));
+        setErrorState(statesMapping.get(origin.getErrorState()));
+
+        inlineTransitions(origin, statesMapping);
+		return statesMapping;
+	}
 
     /**
      * Returns a copy of this FDTMC decorated with "presence transitions",
@@ -345,14 +350,7 @@ public class FDTMC {
      */
     private FDTMC copy() {
         FDTMC copied = new FDTMC();
-        copied.variableName = this.getVariableName();
-
-        Map<State, State> statesMapping = copied.inlineStates(this);
-        copied.setInitialState(statesMapping.get(this.getInitialState()));
-        copied.setSuccessState(statesMapping.get(this.getSuccessState()));
-        copied.setErrorState(statesMapping.get(this.getErrorState()));
-
-        copied.inlineTransitions(this, statesMapping);
+        Map<State, State> statesMapping = getCopyForInlining(copied);
         copied.inlineInterfaces(this, statesMapping);
         return copied;
     }

@@ -270,7 +270,15 @@ public class FDTMC {
 	 */
     public FDTMC inline(Map<String, FDTMC> indexedModels) {
         FDTMC inlined = new FDTMC();
-        Map<State, State> statesMapping = copyForInlining(inlined);
+        
+        inlined.variableName = this.getVariableName();
+
+        Map<State, State> statesMapping = inlined.inlineStates(this);
+        inlined.setInitialState(statesMapping.get(this.getInitialState()));
+        inlined.setSuccessState(statesMapping.get(this.getSuccessState()));
+        inlined.setErrorState(statesMapping.get(this.getErrorState()));
+
+        inlined.inlineTransitions(this, statesMapping);
 
         for (Map.Entry<String, List<Interface>> entry: interfaces.entrySet()) {
             String dependencyId = entry.getKey();
@@ -329,24 +337,6 @@ public class FDTMC {
     public static FDTMC ifThenElse(String presenceVariable, FDTMC ifPresent, FDTMC ifAbsent) {
         // TODO Handle ifAbsent.
         return ifPresent.decoratedWithPresence(presenceVariable);
-    }
-
-    /**
-     * Prepares {@code destination} FDTMC to be an inlined version of this one.
-     * @param destination
-     * @return a mapping from states in this FDTMC to the corresponding states
-     *      in the copied one ({@code destination}).
-     */
-    private Map<State, State> copyForInlining(FDTMC destination) {
-        destination.variableName = this.getVariableName();
-
-        Map<State, State> statesMapping = destination.inlineStates(this);
-        destination.setInitialState(statesMapping.get(this.getInitialState()));
-        destination.setSuccessState(statesMapping.get(this.getSuccessState()));
-        destination.setErrorState(statesMapping.get(this.getErrorState()));
-
-        destination.inlineTransitions(this, statesMapping);
-        return statesMapping;
     }
 
     /**

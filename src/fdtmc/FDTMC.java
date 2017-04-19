@@ -229,17 +229,27 @@ public class FDTMC {
 	@Override
 	public boolean equals(Object obj) {
 	    if (obj != null && obj instanceof FDTMC) {
-	        FDTMC other = (FDTMC) obj;
-	        LinkedList<List<Interface>> thisInterfaces = new LinkedList<List<Interface>>(interfaces.values());
-            LinkedList<List<Interface>> otherInterfaces = new LinkedList<List<Interface>>(other.interfaces.values());
-            return states.equals(other.states)
-	                && getInitialState().equals(other.getInitialState())
-	                && getSuccessState().equals(other.getSuccessState())
-	                && getErrorState().equals(other.getErrorState())
-	                && transitionSystem.equals(other.transitionSystem)
-	                && thisInterfaces.equals(otherInterfaces);
+            return areStatesTransitionAndInterfacesEquals((FDTMC) obj);
 	    }
 	    return false;
+	}
+	
+	private boolean areStatesTransitionAndInterfacesEquals(FDTMC other) {
+		boolean areStatesTransitionAndInterfacesEquals = true;
+		if (states.equals(other.states)
+				&& getInitialState().equals(other.getInitialState())
+				&& getSuccessState().equals(other.getSuccessState())
+				&& getErrorState().equals(other.getErrorState())
+				&& transitionSystem.equals(other.transitionSystem)) {
+			LinkedList<List<Interface>> thisInterfaces = new LinkedList<List<Interface>>(interfaces.values());
+			LinkedList<List<Interface>> otherInterfaces = new LinkedList<List<Interface>>(other.interfaces.values());
+			if (!thisInterfaces.equals(otherInterfaces)) {
+				areStatesTransitionAndInterfacesEquals = false;
+			}
+		} else {
+			areStatesTransitionAndInterfacesEquals = false;
+		}
+		return areStatesTransitionAndInterfacesEquals;
 	}
 
 	@Override

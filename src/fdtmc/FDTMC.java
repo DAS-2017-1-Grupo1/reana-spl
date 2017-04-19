@@ -299,15 +299,13 @@ public class FDTMC {
     public FDTMC decoratedWithPresence(String presenceVariable) {
         FDTMC decorated = copy();
 
-        State oldInitial = decorated.getInitialState();
-        State newInitial = decorated.createInitialState();
         // Enter the original chain in case of presence
-        decorated.createTransition(newInitial,
-                                   oldInitial,
+        decorated.createTransition(decorated.createInitialState(),
+        		 				   decorated.getInitialState(),
                                    "",
                                    presenceVariable);
         // Short-circuit in case of absence
-        decorated.createTransition(newInitial,
+        decorated.createTransition(decorated.createInitialState(),
                                    decorated.getSuccessState(),
                                    "",
                                    "1-"+presenceVariable);

@@ -402,10 +402,9 @@ public class FDTMC {
     }
 
     private Transition inlineTransition(Transition transition, Map<State, State> statesOldToNew) {
-        State newSource = statesOldToNew.get(transition.getSource());
-        State newTarget = statesOldToNew.get(transition.getTarget());
-        return createTransition(newSource,
-                                newTarget,
+
+        return createTransition(statesOldToNew.get(transition.getSource()),
+        						statesOldToNew.get(transition.getTarget()),
                                 transition.getActionName(),
                                 transition.getProbability());
     }

@@ -235,11 +235,11 @@ public class FDTMC {
 	
 	private boolean areStatesTransitionAndInterfacesEquals(FDTMC other) {
 		boolean areStatesTransitionAndInterfacesEquals = true;
-		if (states.equals(other.states)
-				&& getInitialState().equals(other.getInitialState())
-				&& getSuccessState().equals(other.getSuccessState())
-				&& getErrorState().equals(other.getErrorState())
-				&& transitionSystem.equals(other.transitionSystem)) {
+		boolean areStatesEquals = states.equals(other.states)
+						&& getInitialState().equals(other.getInitialState())
+						&& getSuccessState().equals(other.getSuccessState())
+						&& getErrorState().equals(other.getErrorState());
+		if (areStatesEquals && transitionSystem.equals(other.transitionSystem)) {
 			LinkedList<List<Interface>> thisInterfaces = new LinkedList<List<Interface>>(interfaces.values());
 			LinkedList<List<Interface>> otherInterfaces = new LinkedList<List<Interface>>(other.interfaces.values());
 			if (!thisInterfaces.equals(otherInterfaces)) {

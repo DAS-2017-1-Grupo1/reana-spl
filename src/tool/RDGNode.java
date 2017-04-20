@@ -163,7 +163,7 @@ public class RDGNode {
      * @throws CyclicRdgException
      */
     private void topoSortVisit(RDGNode node, Map<RDGNode, Boolean> marks, List<RDGNode> sorted) throws CyclicRdgException {
-        if (marks.containsKey(node) && marks.get(node) == false) {
+        if (hasAtLeastOneCycle(marks, node)) {
             // Visiting temporarily marked node -- this means a cyclic dependency!
             throw new CyclicRdgException();
         } else if (!marks.containsKey(node)) {
@@ -177,6 +177,10 @@ public class RDGNode {
             sorted.add(node);
         }
     }
+
+    private boolean hasAtLeastOneCycle(Map<RDGNode, Boolean> marks, RDGNode node) {
+    	return marks.containsKey(node) && marks.get(node) == false;
+	}
 
     /**
      * Computes the number of paths from source nodes to every known node.

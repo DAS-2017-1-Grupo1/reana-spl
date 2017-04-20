@@ -264,6 +264,17 @@ public class RDGNode {
     }
 
     /**
+     * Return a {@link #equals(Object)} node
+     *
+     * @param candidate comparation element
+     * @param target submited element
+     * @return true if some candidate is equals to {@link equals method}
+     */
+    private static boolean isEqualsButNotSame(RDGNode candidate, RDGNode target) {
+		return (candidate != target && candidate.equals(target));
+    }
+
+    /**
      * Returns the first RDG node (in crescent order of creation time) which is similar
      * to the one provided.
      *
@@ -273,7 +284,7 @@ public class RDGNode {
      */
     public static RDGNode getSimilarNode(RDGNode target) {
         for (RDGNode candidate: nodesInCreationOrder) {
-            if (candidate != target && candidate.equals(target)) {
+            if (isEqualsButNotSame(candidate, target)) {
                 return candidate;
             }
         }

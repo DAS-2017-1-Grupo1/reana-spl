@@ -155,6 +155,27 @@ public class RDGNode {
     	topoSortVisit(this, marks, transitiveDependencies);
     }
 
+    private boolean hasAtLeastOneCycle(Map<RDGNode, Boolean> marks, RDGNode node) {
+    	return marks.containsKey(node) && marks.get(node) == false;
+	}
+
+    /**
+     * Auxiliar method to topological sort. See {@link #topoSortVisit(RDGNode, Map, List)}
+     *
+     */
+    private boolean isRunningTopologySort(RDGNode node, Map<RDGNode, Boolean> marks) {
+    	boolean isRunning = false;
+
+    	if (hasAtLeastOneCycle(marks, node)) {
+	        // Visiting temporarily marked node -- this means a cyclic dependency!
+	        throw new CyclicRdgException();
+	    } else if (!marks.containsKey(node)) {
+	    	isRunning = true;
+	    }
+
+	    return isRunning;
+    }
+
     /**
      * Topological sort {@code visit} function (Cormen et al.'s algorithm).
      * @param node
@@ -163,52 +184,23 @@ public class RDGNode {
      * @throws CyclicRdgException
      */
     private void topoSortVisit(RDGNode node, Map<RDGNode, Boolean> marks, List<RDGNode> sorted) throws CyclicRdgException {
-        if (hasAtLeastOneCycle(marks, node)) {
-            // Visiting temporarily marked node -- this means a cyclic dependency!
-            throw new CyclicRdgException();
-        } else if (!marks.containsKey(node)) {
+        if (isRunningTopologySort(node, marks)) {
             // Mark node temporarily (cycle detection)
             marks.put(node, false);
+
             for (RDGNode child: node.getDependencies()) {
                 topoSortVisit(child, marks, sorted);
             }
+
             // Mark node permanently (finished sorting branch)
             marks.put(node, true);
             sorted.add(node);
         }
     }
 
-    private boolean hasAtLeastOneCycle(Map<RDGNode, Boolean> marks, RDGNode node) {
-    	return marks.containsKey(node) && marks.get(node) == false;
-	}
-
-    /**
-     * Computes the number of paths from source nodes to every known node.
-     * @return A map associating an RDGNode to the corresponding number
-     *      of paths from a source node which lead to it.
-     * @throws CyclicRdgException
-     */
-    public Map<RDGNode, Integer> getNumberOfPaths() throws CyclicRdgException {
-        Map<RDGNode, Integer> numberOfPaths = new HashMap<RDGNode, Integer>();
-
-        Map<RDGNode, Integer> tmpNumberOfPaths = getNumberMapsOfPathVisited();
-        numberOfPaths = sumPaths(numberOfPaths, tmpNumberOfPaths);
-
-        return numberOfPaths;
-    }
-
-    private Map<RDGNode, Integer> getNumberMapsOfPathVisited() {
-        Map<RDGNode, Boolean> marks = new HashMap<RDGNode, Boolean>();
-        Map<RDGNode, Map<RDGNode, Integer>> cache = new HashMap<RDGNode, Map<RDGNode,Integer>>();
-        return numPathsVisit(this, marks, cache);
-    }
-
     // TODO Parameterize topological sort of RDG.
-    private static Map<RDGNode, Integer> numPathsVisit(RDGNode node, Map<RDGNode, Boolean> marks, Map<RDGNode, Map<RDGNode, Integer>> cache) throws CyclicRdgException {
-        if (marks.containsKey(node) && marks.get(node) == false) {
-            // Visiting temporarily marked node -- this means a cyclic dependency!
-            throw new CyclicRdgException();
-        } else if (!marks.containsKey(node)) {
+    private Map<RDGNode, Integer> numPathsVisit(RDGNode node, Map<RDGNode, Boolean> marks, Map<RDGNode, Map<RDGNode, Integer>> cache) throws CyclicRdgException {
+        if (isRunningTopologySort(node, marks)) {
             // Mark node temporarily (cycle detection)
             marks.put(node, false);
 
@@ -228,6 +220,28 @@ public class RDGNode {
         }
         // Otherwise, the node has already been visited.
         return cache.get(node);
+    }
+
+    /**
+     * Computes the number of paths from source nodes to every known node.
+     * @return A map associating an RDGNode to the corresponding number
+     *      of paths from a source node which lead to it.
+     * @throws CyclicRdgException
+     */
+    public Map<RDGNode, Integer> getNumberOfPaths() throws CyclicRdgException {
+        Map<RDGNode, Integer> numberOfPaths = new HashMap<RDGNode, Integer>();
+
+        Map<RDGNode, Integer> tmpNumberOfPaths = getNumberMapsOfPathVisited();
+        numberOfPaths = sumPaths(numberOfPaths, tmpNumberOfPaths);
+
+        return numberOfPaths;
+    }
+
+    private Map<RDGNode, Integer> getNumberMapsOfPathVisited() {
+        Map<RDGNode, Boolean> marks = new HashMap<RDGNode, Boolean>();
+        Map<RDGNode, Map<RDGNode, Integer>> cache = new HashMap<RDGNode, Map<RDGNode,Integer>>();
+
+        return numPathsVisit(this, marks, cache);
     }
 
     /**

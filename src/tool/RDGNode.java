@@ -16,6 +16,7 @@ public class RDGNode {
 	//This reference is used to store all the RDGnodes created during the evaluation
 	private static Map<String, RDGNode> rdgNodes = new HashMap<String, RDGNode>();
 	private static List<RDGNode> nodesInCreationOrder = new LinkedList<RDGNode>();
+	private TopologicalSorting topoSort = new TopologicalSorting();
 
     private static int lastNodeIndex = 0;
 
@@ -139,68 +140,24 @@ public class RDGNode {
     public List<RDGNode> getDependenciesTransitiveClosure() throws CyclicRdgException {
         List<RDGNode> transitiveDependencies = new LinkedList<RDGNode>();
 
-        runTopologicalSortVisit(transitiveDependencies);
+        topoSort.runTopologicalSortVisit(transitiveDependencies, this);
 
         return transitiveDependencies;
     }
 
-    /**
-     * Run {@link #topoSortVisit(RDGNode, Map, List)} to get one sort graph
-     *
-     * @param transitiveDependencies
-     */
-    public void runTopologicalSortVisit(List<RDGNode> transitiveDependencies) {
-    	Map<RDGNode, Boolean> marks = new HashMap<RDGNode, Boolean>();
-
-    	topoSortVisit(this, marks, transitiveDependencies);
+    /*TopologicalSorting.java*/
+    /*public void runTopologicalSortVisit(List<RDGNode> transitiveDependencies, RDGNode node) {
+    	topoSort.runTopologicalSortVisit(transitiveDependencies, node);
     }
-
-    private boolean hasAtLeastOneCycle(Map<RDGNode, Boolean> marks, RDGNode node) {
-    	return marks.containsKey(node) && marks.get(node) == false;
-	}
-
-    /**
-     * Auxiliar method to topological sort. See {@link #topoSortVisit(RDGNode, Map, List)}
-     *
-     */
+    
     private boolean isRunningTopologySort(RDGNode node, Map<RDGNode, Boolean> marks) {
-    	boolean isRunning = false;
-
-    	if (hasAtLeastOneCycle(marks, node)) {
-	        // Visiting temporarily marked node -- this means a cyclic dependency!
-	        throw new CyclicRdgException();
-	    } else if (!marks.containsKey(node)) {
-	    	isRunning = true;
-	    }
-
-	    return isRunning;
+    	return topoSort.isRunningTopologySort(node, marks);
     }
-
-    /**
-     * Topological sort {@code visit} function (Cormen et al.'s algorithm).
-     * @param node
-     * @param marks
-     * @param sorted
-     * @throws CyclicRdgException
-     */
-    private void topoSortVisit(RDGNode node, Map<RDGNode, Boolean> marks, List<RDGNode> sorted) throws CyclicRdgException {
-        if (isRunningTopologySort(node, marks)) {
-            // Mark node temporarily (cycle detection)
-            marks.put(node, false);
-
-            for (RDGNode child: node.getDependencies()) {
-                topoSortVisit(child, marks, sorted);
-            }
-
-            // Mark node permanently (finished sorting branch)
-            marks.put(node, true);
-            sorted.add(node);
-        }
-    }
+    //*********************/
 
     // TODO Parameterize topological sort of RDG.
     private Map<RDGNode, Integer> numPathsVisit(RDGNode node, Map<RDGNode, Boolean> marks, Map<RDGNode, Map<RDGNode, Integer>> cache) throws CyclicRdgException {
-        if (isRunningTopologySort(node, marks)) {
+        if (topoSort.isRunningTopologySort(node, marks)) {
             // Mark node temporarily (cycle detection)
             marks.put(node, false);
 

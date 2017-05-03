@@ -5,39 +5,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class FDTMC {
+	
+	public static final String INITIAL_LABEL = "initial";
 
-    public static final String INITIAL_LABEL = "initial";
-    public static final String SUCCESS_LABEL = "success";
-    public static final String ERROR_LABEL = "error";
-
-	private Set<State> states;
-    private State initialState;
-    private State successState;
-    private State errorState;
+	private StateHandler stateHandler;
 	private String variableName;
-	private int index;
 	private Map<State, List<Transition>> transitionSystem;
 	private Map<String, List<Interface>> interfaces;
 
 
 	public FDTMC() {
-		states = new LinkedHashSet<State>();
-		initialState = null;
+		stateHandler = new StateHandler(this);
 		variableName = null;
-		index = 0;
 		transitionSystem = new LinkedHashMap<State, List<Transition>>();
 		interfaces = new LinkedHashMap<String, List<Interface>>();
 	}
 
 	public Collection<State> getStates() {
-		return states;
+		return stateHandler.getStates();
 	}
 
 	public void setVariableName(String name) {
@@ -49,73 +40,51 @@ public class FDTMC {
 	}
 
 	public int getVariableIndex() {
-		return index;
+		return stateHandler.getIndex();
 	}
 
 	public State createState() {
-		State temp = new State();
-		temp.setVariableName(variableName);
-		temp.setIndex(index);
-		states.add(temp);
-		transitionSystem.put(temp, null);
-		if (index == 0)
-			initialState = temp;
-		index++;
-		return temp;
+		return stateHandler.createState();
 	}
 
 	public State createState(String label) {
-		State temp = createState();
-		temp.setLabel(label);
-		return temp;
+		return stateHandler.createState(label);
 	}
 
     public State createInitialState() {
-        State initial = createState();
-        setInitialState(initial);
-        return initial;
+        return stateHandler.createInitialState();
     }
 
     private void setInitialState(State initialState) {
-        if (this.initialState != null) {
-            this.initialState.setLabel(null);
-        }
-        this.initialState = initialState;
-        initialState.setLabel(INITIAL_LABEL);
+        stateHandler.setInitialState(initialState);
     }
 
     public State getInitialState() {
-        return initialState;
+        return stateHandler.getInitialState();
     }
-
+    
     public State createSuccessState() {
-        State success = createState();
-        setSuccessState(success);
-        return success;
+        return stateHandler.createSuccessState();
     }
 
     private void setSuccessState(State successState) {
-        this.successState = successState;
-        successState.setLabel(SUCCESS_LABEL);
+        stateHandler.setSuccessState(successState);
     }
 
     public State getSuccessState() {
-        return successState;
+        return stateHandler.getSuccessState();
     }
 
     public State createErrorState() {
-        State error = createState();
-        setErrorState(error);
-        return error;
+        return stateHandler.createErrorState();
     }
 
     private void setErrorState(State errorState) {
-        this.errorState = errorState;
-        errorState.setLabel(ERROR_LABEL);
+        stateHandler.setErrorState(errorState);
     }
 
     public State getErrorState() {
-        return errorState;
+        return stateHandler.getErrorState();
     }
 
 	public Transition createTransition(State source, State target, String action, String reliability) {
@@ -168,7 +137,7 @@ public class FDTMC {
 	}
 
 	public State getStateByLabel(String label) {
-		Iterator <State> it = states.iterator();
+		Iterator <State> it = stateHandler.getStates().iterator();
 		while (it.hasNext()){
 			State s = it.next();
 			if (s.getLabel().equals(label))
@@ -235,7 +204,7 @@ public class FDTMC {
 	
 	private boolean areStatesTransitionAndInterfacesEquals(FDTMC other) {
 		boolean areStatesTransitionAndInterfacesEquals = true;
-		boolean areStatesEquals = states.equals(other.states)
+		boolean areStatesEquals = stateHandler.getStates().equals(other.stateHandler.getStates())
 						&& getInitialState().equals(other.getInitialState())
 						&& getSuccessState().equals(other.getSuccessState())
 						&& getErrorState().equals(other.getErrorState());
@@ -253,7 +222,7 @@ public class FDTMC {
 
 	@Override
     public int hashCode() {
-        return states.hashCode() + transitionSystem.hashCode() + interfaces.hashCode();
+        return stateHandler.getStates().hashCode() + transitionSystem.hashCode() + interfaces.hashCode();
     }
 
     public Map<State, List<Transition>> getTransitions() {

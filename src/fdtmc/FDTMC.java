@@ -137,13 +137,7 @@ public class FDTMC {
 	}
 
 	public State getStateByLabel(String label) {
-		Iterator <State> it = stateHandler.getStates().iterator();
-		while (it.hasNext()){
-			State s = it.next();
-			if (s.getLabel().equals(label))
-				return s;
-		}
-		return null;
+		return stateHandler.getStateByLabel(label);
 	}
 
 	public Transition getTransitionByActionName(String action) {

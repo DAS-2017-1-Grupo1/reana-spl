@@ -1,5 +1,6 @@
 package fdtmc;
 
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -101,5 +102,15 @@ public class StateHandler {
 	public void setErrorState(State errorState) {
 		this.errorState = errorState;
 		this.errorState.setLabel(ERROR_LABEL);
+	}
+
+	public State getStateByLabel(String label) {
+		Iterator <State> it = states.iterator();
+		while (it.hasNext()){
+			State s = it.next();
+			if (s.getLabel().equals(label))
+				return s;
+		}
+		return null;
 	}
 }

@@ -13,6 +13,8 @@ import fdtmc.FDTMC;
 
 public class RDGNode {
 
+	private static final int INITIAL_HEIGHT = 0;
+
 	// This reference is used to store all the RDGnodes created during the
 	// evaluation
 	private static Map<String, RDGNode> rdgNodes = new HashMap<String, RDGNode>();
@@ -56,7 +58,7 @@ public class RDGNode {
 		this.presenceCondition = presenceCondition;
 		this.fdtmc = fdtmc;
 		this.dependencies = new HashSet<RDGNode>();
-		this.height = 0;
+		this.height = INITIAL_HEIGHT;
 
 		rdgNodes.put(id, this);
 		nodesInCreationOrder.add(this);
@@ -98,6 +100,26 @@ public class RDGNode {
 
 	public static String getNextId() {
 		return "n" + lastNodeIndex++;
+	}
+
+	public TopologicalSorting getTopoSort() {
+		return topoSort;
+	}
+
+	public void setTopoSort(TopologicalSorting topoSort) {
+		this.topoSort = topoSort;
+	}
+
+	public TopologicalSortingPaths getTopoSortPaths() {
+		return topoSortPaths;
+	}
+
+	public void setTopoSortPaths(TopologicalSortingPaths topoSortPaths) {
+		this.topoSortPaths = topoSortPaths;
+	}
+
+	public static List<RDGNode> getNodesInCreationOrder() {
+		return nodesInCreationOrder;
 	}
 
 	/**
@@ -145,13 +167,13 @@ public class RDGNode {
 	 */
 	public List<RDGNode> getDependenciesTransitiveClosure() throws CyclicRdgException {
 		List<RDGNode> transitiveDependencies = new LinkedList<RDGNode>();
-		topoSort.runTopologicalSortVisit(transitiveDependencies, this);
+		this.getTopoSort().runTopologicalSortVisit(transitiveDependencies, this);
 		return transitiveDependencies;
 	}
 
 	/* TopologicalSortingPaths.java */
 	public Map<RDGNode, Integer> getNumberOfPaths() throws CyclicRdgException {
-		return topoSortPaths.getNumberOfPaths(this);
+		return this.getTopoSortPaths().getNumberOfPaths(this);
 	}
 
 	/**
@@ -177,7 +199,7 @@ public class RDGNode {
 	 * @return a similar RDG node or null in case there is none.
 	 */
 	public static RDGNode getSimilarNode(RDGNode target) {
-		for (RDGNode candidate : nodesInCreationOrder) {
+		for (RDGNode candidate : getNodesInCreationOrder()) {
 			if (isEqualsButNotSame(candidate, target)) {
 				return candidate;
 			}

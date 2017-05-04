@@ -33,7 +33,7 @@ public class StateHandler {
 		states.add(temp);
 		fdtmc.getTransitions().put(temp, null);
 		if (index == 0)
-			initialState = temp;
+			setInitialState(temp);
 		index++;
 		return temp;
 	}

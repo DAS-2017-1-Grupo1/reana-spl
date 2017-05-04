@@ -118,6 +118,10 @@ public class RDGNode {
 		this.topoSortPaths = topoSortPaths;
 	}
 
+	public static List<RDGNode> getNodesInCreationOrder() {
+		return nodesInCreationOrder;
+	}
+
 	/**
 	 * We consider two RDG nodes to be equal whenever their behavior is modeled
 	 * by equal FDTMCs, their presence condition is the same and their
@@ -195,7 +199,7 @@ public class RDGNode {
 	 * @return a similar RDG node or null in case there is none.
 	 */
 	public static RDGNode getSimilarNode(RDGNode target) {
-		for (RDGNode candidate : nodesInCreationOrder) {
+		for (RDGNode candidate : getNodesInCreationOrder()) {
 			if (isEqualsButNotSame(candidate, target)) {
 				return candidate;
 			}

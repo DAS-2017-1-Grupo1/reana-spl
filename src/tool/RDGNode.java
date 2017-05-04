@@ -102,6 +102,22 @@ public class RDGNode {
 		return "n" + lastNodeIndex++;
 	}
 
+	public TopologicalSorting getTopoSort() {
+		return topoSort;
+	}
+
+	public void setTopoSort(TopologicalSorting topoSort) {
+		this.topoSort = topoSort;
+	}
+
+	public TopologicalSortingPaths getTopoSortPaths() {
+		return topoSortPaths;
+	}
+
+	public void setTopoSortPaths(TopologicalSortingPaths topoSortPaths) {
+		this.topoSortPaths = topoSortPaths;
+	}
+
 	/**
 	 * We consider two RDG nodes to be equal whenever their behavior is modeled
 	 * by equal FDTMCs, their presence condition is the same and their
@@ -147,13 +163,13 @@ public class RDGNode {
 	 */
 	public List<RDGNode> getDependenciesTransitiveClosure() throws CyclicRdgException {
 		List<RDGNode> transitiveDependencies = new LinkedList<RDGNode>();
-		topoSort.runTopologicalSortVisit(transitiveDependencies, this);
+		this.getTopoSort().runTopologicalSortVisit(transitiveDependencies, this);
 		return transitiveDependencies;
 	}
 
 	/* TopologicalSortingPaths.java */
 	public Map<RDGNode, Integer> getNumberOfPaths() throws CyclicRdgException {
-		return topoSortPaths.getNumberOfPaths(this);
+		return this.getTopoSortPaths().getNumberOfPaths(this);
 	}
 
 	/**

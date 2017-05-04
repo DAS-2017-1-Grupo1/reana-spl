@@ -11,8 +11,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class FDTMC {
-	
-	public static final String INITIAL_LABEL = "initial";
 
 	private StateHandler stateHandler;
 	private String variableName;

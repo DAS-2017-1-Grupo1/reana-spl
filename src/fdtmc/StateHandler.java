@@ -6,9 +6,9 @@ import java.util.Set;
 
 public class StateHandler {
 
-	public static final String INITIAL_LABEL = "initial";
-	public static final String SUCCESS_LABEL = "success";
-	public static final String ERROR_LABEL = "error";
+	private static final String INITIAL_LABEL = "initial";
+	private static final String SUCCESS_LABEL = "success";
+	private static final String ERROR_LABEL = "error";
 
 	private final FDTMC fdtmc;
 

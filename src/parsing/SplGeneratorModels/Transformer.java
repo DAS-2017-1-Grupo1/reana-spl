@@ -18,6 +18,8 @@ import parsing.SplGeneratorModels.SPLFilePersistence;
 import tool.RDGNode;
 
 public class Transformer {
+	
+	private static final String INITIAL_LABEL = "initial";
 
 	private HashMap<String, fdtmc.State> fdtmcStateById = new HashMap<String, fdtmc.State>();
 	private RDGNode root;
@@ -80,7 +82,7 @@ public class Transformer {
 				f.createTransition(source, target, "", Double.toString(1.0));
 				stateByAdElement.put(a, target);
 			}
-			source.setLabel(FDTMC.INITIAL_LABEL);
+			source.setLabel(INITIAL_LABEL);
 			answer = source;
 
 			break;

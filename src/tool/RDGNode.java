@@ -13,6 +13,8 @@ import fdtmc.FDTMC;
 
 public class RDGNode {
 
+	private static final int INITIAL_HEIGHT = 0;
+
 	// This reference is used to store all the RDGnodes created during the
 	// evaluation
 	private static Map<String, RDGNode> rdgNodes = new HashMap<String, RDGNode>();
@@ -56,7 +58,7 @@ public class RDGNode {
 		this.presenceCondition = presenceCondition;
 		this.fdtmc = fdtmc;
 		this.dependencies = new HashSet<RDGNode>();
-		this.height = 0;
+		this.height = INITIAL_HEIGHT;
 
 		rdgNodes.put(id, this);
 		nodesInCreationOrder.add(this);
